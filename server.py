@@ -1,4 +1,5 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import uvicorn
 
@@ -163,6 +164,39 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         print("Client disconnected")
+
+html = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FastAPI WebSocket Test</title>
+    </head>
+    <body>
+        <h1>WebSocket Test Client</h1>
+        <div id="messages"></div>
+        <input type="text" id="messageText" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+        <script>
+            var ws = new WebSocket("ws://localhost:1234/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages');
+                var message = document.createElement('div');
+                message.textContent = event.data;
+                messages.appendChild(message);
+            };
+            function sendMessage() {
+                var input = document.getElementById('messageText');
+                ws.send(input.value);
+                input.value = '';
+            }
+        </script>
+    </body>
+</html>
+"""
+@app.get("/wstest")
+async def get():
+    return HTMLResponse(html)
+
 
 
 if __name__ == "__main__":

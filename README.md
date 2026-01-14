@@ -6,7 +6,7 @@ Der aktuelle Stand des GameServers, so wie gezeigt im Seminar.
 - hart codierte Beschränkungen (max 8 User, nach 100 Ticks wird eine Message gelöscht)
 - die Route "/all" dient der Diagnose ... hier werden einfach alle aktuellen Nachrichten geliefert
 - über die Route /ws kann eine (zusätzliche) WebSocket Connection aufgebaut werden
-  - clients können darüber broadcast messages an alle weiteren verbundenen WebSocket schicken
+  - clients können darüber broadcast messages an alle weiteren verbundenen WebSockets schicken
   - über den WebSocket werden die ticks des game servers verschickt    
 
 

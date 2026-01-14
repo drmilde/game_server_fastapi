@@ -57,6 +57,11 @@ def clearUsers():
     current_user = 0
     users.clear()
 
+def removeUser(id:int):
+    global users
+    newusers = [u for u in users if u.id != id]
+    users = newusers
+
 def getUsers():
     return users
 
@@ -110,6 +115,7 @@ async def join(name:str):
 
 @app.get("/l/{id}")
 async def leave(id: int):
+    removeUser(id)
     return {"id": id, "m": "left"}
 
 @app.get("/u")
@@ -150,6 +156,7 @@ async def clear_messages():
 
 @app.get("/r")
 async def reset():
+    resetServer()
     return {"m": "reset"}
 
 # Websocket

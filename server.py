@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
@@ -39,6 +40,8 @@ messages = []
 
 current_user = 0
 user_ids = [1,2,4,8,16,32,64,128]
+
+# Helper functions
 
 async def tick():
     global ticker
@@ -81,6 +84,7 @@ async def getEntries(id: int):
     result = []
     for entry in messages:
         forme =  entry.t & id
+        print(forme)
         if (forme):
             result.append(entry)
             entry.t = max(0,entry.t - id)
@@ -94,13 +98,31 @@ def tidyMessages():
     filtered = [e for e in filtered if (ticker - e.b) < 100]
     messages = filtered
     
+# Configure FastAPI app
+
+origins = [
+    "*",
+]
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Define Routes
 
 @app.get("/")
 async def info():
     return {"m": "gs V.01", 
             "commands": ["/j","/l/{id}","/u", "/s/{id}/{r}","/m/{id}", "/c", "/r"]
             }
+
 # User management
 
 @app.get("/j/")
@@ -172,6 +194,8 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
         print("Client disconnected")
 
+# Websocket Test Client
+
 html = """
 <!DOCTYPE html>
 <html>
@@ -205,6 +229,7 @@ async def get():
     return HTMLResponse(html)
 
 
+########### MAIN ###############
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=1234)
